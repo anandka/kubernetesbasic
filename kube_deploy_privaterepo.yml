@@ -1,0 +1,127 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Example usage: kubectl create -f <this_file>
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: xor-poc
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        deploy: redis
+    spec:
+      containers:
+      - name: redis
+        image: xor.dockerrepo.com/k8sredis
+        ports:
+        - containerPort: 6379
+      imagePullSecrets:
+      - name: xorregistrykey
+
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node1
+  namespace: xor-poc
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        deploy: node1
+    spec:
+      containers:
+      - name: node1
+        image: xor.dockerrepo.com/k8snode1
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: xorregistrykey
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node2
+  namespace: xor-poc
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        deploy: node2
+    spec:
+      containers:
+      - name: node2
+        image: xor.dockerrepo.com/k8snode2
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: xorregistrykey
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    service: redis
+  name: redis
+  namespace: xor-poc
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+    targetPort: 6379
+    nodePort: 30379
+  selector:
+    deploy: redis
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    service: node1
+  name: node1
+  namespace: xor-poc
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 32333
+  selector:
+    deploy: node1
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    service: node2
+  name: node2
+  namespace: xor-poc
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 32222
+  selector:
+    deploy: node2
