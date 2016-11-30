@@ -155,3 +155,33 @@ Now if you check your pods again they will be running on the same hosts as per t
 	kubectl get pods -o wide -n=xor-poc
 
 ~~~~~~
+
+
+## Using Images from Private Repository
+
+# If you want to setup your own private repository on centos 
+
+https://github.com/anandka/dockerbasic/blob/master/Docker-repo-setup.md
+
+
+Once you have a private repository and its credentials you need to create secrets in order to use it.
+
+To create secret run the below command also make sure your namespace is correct because secrets are't generic they are namespace specific.
+
+~~~~~~
+	# kubectl create secret docker-registry <secrets-name> --docker-server=<repo-server> --docker-username=<user-name> --docker-password=<password> --docker-email=<email-id> -n=<name-space>
+
+	kubectl create secret docker-registry xorregistrykey --docker-server=xor.dockerrepo.com --docker-username=xor --docker-password=xoriant --docker-email=dummy@xor.com -n=xor-poc
+
+
+~~~~~~
+
+
+Now that you have created the secret we need to update the deployment file so as to point it to correct repository and provide the secret.
+
+You have to now modify the image names and add a tag specifing your secretname in your deployment file.
+
+To do it compare file kube_deploy_nodeselector.yml and kube_deploy_privaterepo.yml and edit it appropriately.
+
+#Note:
+	If your repo-server-name isnt configured in DNS and you are using self-signed certificates make sure you copy the certificates and extract them in your VM's also configure /etc/hosts file appropriately as mentioned in the setup document.
