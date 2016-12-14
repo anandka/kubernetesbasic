@@ -1,11 +1,15 @@
-#For each host
+This document contains the steps to setup kubernetes cluster using kube-adm
+It is tested with Centos7
+
+
+# On each host (Minions as well as Master)
 
 SSH into the machine and become root if you are not already (for example, run sudo su -)
 
 If the machine is running CentOS 7, run:
 
-
-# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+~~~~~~~~~~~~
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
@@ -15,6 +19,10 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
+
+~~~~~~~~~
+
+Now run the below commands
 
 ~~~~~~~~~~
  setenforce 0
@@ -28,9 +36,7 @@ EOF
 The kubelet is now restarting every few seconds, as it waits in a crashloop for 
 
 
-
-
-#On Master
+# On Master
 
 ~~~~~~~~
  kubeadm init
